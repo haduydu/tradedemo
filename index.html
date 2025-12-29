@@ -89,8 +89,8 @@
             </h1>
             <p class="text-slate-400 text-xs flex items-center gap-2 mt-1">
                 <span id="connection-status" class="sync-status sync-red"></span>
-                <!-- Updated Loading Message -->
                 <span id="user-id-display">Đang kết nối... (Nếu lâu, hãy dùng Live Server)</span>
+                <span class="text-[10px] text-slate-500 bg-slate-800 px-2 py-0.5 rounded-full border border-slate-700 ml-2">Version-12.29.25</span>
             </p>
         </div>
         
@@ -100,14 +100,15 @@
                 <button onclick="openModal('modal-login')" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold rounded-lg transition-colors">Đăng Nhập</button>
                 <button onclick="openModal('modal-register')" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-colors shadow-lg shadow-blue-500/20">Đăng Ký</button>
             </div>
+            
+            <!-- NEW ACCOUNT BUTTON (User Icon) -->
             <div id="auth-user" class="hidden flex items-center gap-3">
-                <div class="text-right">
-                    <div id="user-email" class="text-xs font-bold text-white">user@example.com</div>
-                </div>
-                <div class="flex flex-col gap-1">
-                    <button onclick="logoutUser()" class="px-3 py-1 border border-red-500/50 text-red-400 hover:bg-red-500/10 text-[10px] rounded transition-colors w-full text-center">Thoát</button>
-                    <button onclick="openModal('modal-change-pass')" class="px-3 py-1 border border-slate-500/50 text-slate-300 hover:bg-slate-700 text-[10px] rounded transition-colors w-full text-center">Đổi MK</button>
-                </div>
+                <button onclick="openModal('modal-user-profile')" class="flex items-center gap-2 px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-white transition-all shadow-md group">
+                    <div class="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-[10px] group-hover:scale-110 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg>
+                    </div>
+                    <span class="text-xs font-bold text-slate-300 group-hover:text-white">Tài Khoản</span>
+                </button>
             </div>
         </div>
     </header>
@@ -227,7 +228,7 @@
                     <thead class="bg-slate-900 text-[9px] text-slate-400 sticky top-0 z-10 shadow-sm">
                         <tr>
                             <th class="p-2">Vị thế</th>
-                            <th class="p-2 text-center text-blue-400">Khung</th>
+                            <th class="p-2 text-center">Khung</th>
                             <th class="p-2">Entry</th>
                             <th class="p-2 text-center">TP/SL</th>
                             <th class="p-2 text-right">PnL (ROE)</th>
@@ -246,12 +247,18 @@
                 <div class="p-3 border-b border-slate-700 bg-slate-800/50">
                     <div class="flex justify-between items-center mb-2">
                         <span class="text-[10px] font-bold text-slate-400 uppercase">Hiệu Suất</span>
-                        <div class="flex bg-slate-700 rounded p-0.5">
-                            <button onclick="updateStats('12h')" class="stat-filter-btn px-2 py-0.5 text-[9px] rounded text-slate-300 hover:bg-slate-600 active-stat" data-tf="12h">12H</button>
-                            <button onclick="updateStats('24h')" class="stat-filter-btn px-2 py-0.5 text-[9px] rounded text-slate-300 hover:bg-slate-600" data-tf="24h">1D</button>
-                            <button onclick="updateStats('7d')" class="stat-filter-btn px-2 py-0.5 text-[9px] rounded text-slate-300 hover:bg-slate-600" data-tf="7d">7D</button>
-                            <button onclick="updateStats('30d')" class="stat-filter-btn px-2 py-0.5 text-[9px] rounded text-slate-300 hover:bg-slate-600" data-tf="30d">30D</button>
-                            <button onclick="updateStats('1y')" class="stat-filter-btn px-2 py-0.5 text-[9px] rounded text-slate-300 hover:bg-slate-600" data-tf="1y">1Y</button>
+                        <div class="flex items-center gap-2 bg-slate-700 rounded px-2 py-0.5">
+                            <label for="time-filter" class="text-[9px] text-slate-400 font-bold uppercase">Thời Gian:</label>
+                            <select id="time-filter" onchange="updateStats(this.value)" class="bg-transparent text-slate-200 text-[10px] font-bold outline-none border-none cursor-pointer">
+                                <option value="4h" class="bg-slate-800">4 Giờ</option>
+                                <option value="6h" class="bg-slate-800">6 Giờ</option>
+                                <option value="12h" selected class="bg-slate-800">12 Giờ</option>
+                                <option value="24h" class="bg-slate-800">24 Giờ</option>
+                                <option value="7d" class="bg-slate-800">7 Ngày</option>
+                                <option value="30d" class="bg-slate-800">30 Ngày</option>
+                                <option value="1y" class="bg-slate-800">1 Năm</option>
+                                <option value="all" class="bg-slate-800">Tất cả</option>
+                            </select>
                         </div>
                     </div>
                     <div class="grid grid-cols-3 gap-2">
@@ -271,8 +278,52 @@
 
     <!-- Modals -->
     <div id="toast-success" class="toast-notification"><span class="text-xl">✓</span><span id="toast-message">Thông báo</span></div>
+    
+    <!-- NEW: PROFILE MODAL -->
+    <div id="modal-user-profile" class="modal">
+        <div class="modal-content w-[350px]">
+            <span onclick="closeModal('modal-user-profile')" class="absolute top-2 right-4 text-slate-400 cursor-pointer text-xl font-bold">&times;</span>
+            
+            <!-- User Info Header -->
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg border border-slate-600">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-slate-300" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg>
+                </div>
+                <h2 class="text-lg font-bold text-white">Tài Khoản</h2>
+                <p id="profile-email" class="text-sm text-slate-400 font-mono mt-1">checking...</p>
+            </div>
+
+            <div class="space-y-3">
+                <!-- Change Password Accordion -->
+                <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+                    <button onclick="toggleChangePass()" class="flex justify-between items-center w-full text-slate-300 hover:text-white text-sm font-bold transition-colors">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg">🔑</span>
+                            <span>Đổi Mật Khẩu</span>
+                        </div>
+                        <span id="chevron-pass" class="text-xs transition-transform duration-200">▼</span>
+                    </button>
+                    
+                    <div id="change-pass-form" class="hidden mt-3 space-y-3 pt-3 border-t border-slate-700/50 animation-fade">
+                        <input type="password" id="new-pass-profile" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-white text-sm" placeholder="Mật khẩu mới">
+                        <input type="password" id="confirm-new-pass-profile" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-white text-sm" placeholder="Nhập lại mật khẩu">
+                        <div id="profile-pass-error" class="text-red-400 text-xs h-4"></div>
+                        <button onclick="handleProfileChangePass()" class="w-full py-2 bg-purple-600 hover:bg-purple-500 rounded text-white font-bold text-xs shadow-lg">Lưu Thay Đổi</button>
+                    </div>
+                </div>
+
+                <!-- Logout Button -->
+                <button onclick="logoutUser()" class="w-full py-3 bg-red-900/20 hover:bg-red-900/40 border border-red-900/50 text-red-400 rounded-lg flex items-center justify-center gap-2 transition-colors font-bold text-sm group">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Đăng Xuất
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="modal-input" class="modal"><div class="modal-content w-[300px] border-blue-500/50 bg-slate-900 text-center"><h3 class="text-lg font-bold text-white mb-4" id="input-title">Nhập Giá Trị</h3><input type="text" id="custom-input-field" class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-center mb-4 font-mono text-lg" placeholder="0.0"><div id="input-error" class="text-red-400 text-xs mb-2 hidden font-bold">Giá trị không hợp lệ</div><div class="flex gap-2"><button onclick="closeModal('modal-input')" class="flex-1 py-2 bg-slate-700 hover:bg-slate-600 rounded text-slate-300 text-xs font-bold">Hủy</button><button onclick="submitCustomInput()" class="flex-1 py-2 bg-blue-600 hover:bg-blue-500 rounded text-white text-xs font-bold">Xác Nhận</button></div></div></div>
-    <div id="modal-change-pass" class="modal"><div class="modal-content w-[350px]"><span onclick="closeModal('modal-change-pass')" class="absolute top-2 right-4 text-slate-400 cursor-pointer text-xl font-bold">&times;</span><h2 class="text-lg font-bold text-white mb-4">Đổi Mật Khẩu</h2><div class="space-y-4"><input type="password" id="new-pass" class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm" placeholder="Mật khẩu mới"><input type="password" id="confirm-new-pass" class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white text-sm" placeholder="Nhập lại mật khẩu"><div id="change-pass-error" class="text-red-400 text-xs h-4"></div><button onclick="handleChangePassword()" class="w-full py-2 bg-purple-600 hover:bg-purple-500 rounded text-white font-bold text-sm">Lưu Mật Khẩu Mới</button></div></div></div>
     <div id="modal-menu" class="modal"><div class="modal-content w-[300px] border-slate-600 bg-slate-800"><h3 class="text-sm font-bold text-white mb-3 border-b border-slate-700 pb-2">Tùy Chọn Lệnh <span id="menu-order-direction" class="ml-1">--</span></h3><div class="flex flex-col gap-2"><button onclick="viewOrderDetails()" class="flex items-center gap-3 p-3 bg-slate-700 hover:bg-slate-600 rounded text-left transition-colors"><span class="text-lg">📄</span><div><div class="text-xs font-bold text-white">Chi Tiết Lệnh</div><div class="text-[9px] text-slate-400">Xem Entry, TP, SL và PnL</div></div></button><button onclick="openDeleteConfirm()" class="flex items-center gap-3 p-3 bg-slate-700 hover:bg-red-900/40 text-left rounded transition-colors group"><span class="text-lg grayscale group-hover:grayscale-0">🗑️</span><div><div class="text-xs font-bold text-red-400 group-hover:text-red-300">Xóa Lệnh</div><div class="text-[9px] text-slate-400 group-hover:text-red-300/70">Xóa khỏi lịch sử vĩnh viễn</div></div></button></div><button onclick="closeModal('modal-menu')" class="mt-4 w-full py-2 text-xs text-slate-500 hover:text-white">Đóng</button></div></div>
     <div id="modal-confirm-delete" class="modal"><div class="modal-content w-[300px] border-red-500/50 bg-slate-900 text-center"><div class="text-red-500 text-3xl mb-2">⚠️</div><h3 class="text-lg font-bold text-white mb-2">Xác Nhận Xóa</h3><p class="text-xs text-slate-400 mb-6">Bạn có chắc chắn muốn xóa lệnh này khỏi lịch sử? Hành động này không thể hoàn tác.</p><div class="flex gap-2"><button onclick="closeModal('modal-confirm-delete')" class="flex-1 py-2 bg-slate-700 hover:bg-slate-600 rounded text-slate-300 text-xs font-bold">Hủy</button><button onclick="executeDeleteOrder()" class="flex-1 py-2 bg-red-600 hover:bg-red-500 rounded text-white text-xs font-bold">Xóa Vĩnh Viễn</button></div></div></div>
     <div id="modal-details" class="modal"><div class="modal-content border-blue-900/50 bg-slate-900"><div class="flex justify-between items-start mb-4 border-b border-slate-800 pb-2"><div><h3 class="text-lg font-bold text-white">Chi Tiết Lệnh</h3><p class="text-[10px] text-slate-500 font-mono" id="detail-id">--</p></div><button onclick="closeModal('modal-details')" class="text-slate-400 hover:text-white">✕</button></div><div class="space-y-3 font-mono text-sm"><div class="flex justify-between items-center p-2 bg-slate-800/50 rounded"><span class="text-slate-400 text-xs">ENTRY PRICE</span><span id="detail-entry" class="text-white font-bold">---</span></div><div class="flex justify-between items-center p-2 bg-slate-800/50 rounded"><span class="text-slate-400 text-xs">TARGET PROFIT (TP)</span><span id="detail-tp" class="text-green-400 font-bold">---</span></div><div class="flex justify-between items-center p-2 bg-slate-800/50 rounded"><span class="text-slate-400 text-xs">STOP LOSS (SL)</span><span id="detail-sl" class="text-red-400 font-bold">---</span></div><div class="mt-4 pt-3 border-t border-slate-800"><div class="flex justify-between items-center"><span class="text-slate-400 text-xs font-bold uppercase">KẾT QUẢ (PnL)</span><span id="detail-pnl" class="text-xl font-black">---</span></div></div></div></div></div>
@@ -410,30 +461,42 @@
             } else {
                 document.getElementById('view-journal').classList.remove('hidden');
                 document.getElementById('tab-journal').className = "flex-1 py-3 text-xs font-bold text-white border-b-2 border-purple-500 bg-slate-800";
-                window.updateStats(window.currentStatFilter);
+                // Get current value from dropdown to update correctly on switch
+                const currentFilter = document.getElementById('time-filter').value;
+                window.updateStats(currentFilter);
             }
         };
 
         window.updateStats = (timeframe) => {
             window.currentStatFilter = timeframe;
-            document.querySelectorAll('.stat-filter-btn').forEach(btn => {
-                btn.classList.remove('bg-blue-600', 'text-white');
-                if(btn.dataset.tf === timeframe) btn.classList.add('bg-blue-600', 'text-white');
-            });
+            
             const now = Date.now();
             let cutoff = 0;
             const hour = 3600 * 1000;
-            if(timeframe === '12h') cutoff = now - (12 * hour);
-            if(timeframe === '24h') cutoff = now - (24 * hour);
-            if(timeframe === '7d') cutoff = now - (7 * 24 * hour);
-            if(timeframe === '30d') cutoff = now - (30 * 24 * hour);
-            if(timeframe === '1y') cutoff = now - (365 * 24 * hour);
+            
+            // Logic time filters
+            if(timeframe === '4h') cutoff = now - (4 * hour);
+            else if(timeframe === '6h') cutoff = now - (6 * hour);
+            else if(timeframe === '12h') cutoff = now - (12 * hour);
+            else if(timeframe === '24h') cutoff = now - (24 * hour);
+            else if(timeframe === '7d') cutoff = now - (7 * 24 * hour);
+            else if(timeframe === '30d') cutoff = now - (30 * 24 * hour);
+            else if(timeframe === '1y') cutoff = now - (365 * 24 * hour);
+            else cutoff = 0; // 'all'
 
+            // Filter entries for BOTH Stats and Table
             const filtered = window.journalEntries.filter(e => e.timestamp >= cutoff);
+            
+            // Lưu danh sách đã lọc vào biến toàn cục để dùng cho chức năng "Xem Thêm"
+            window.currentFilteredJournal = filtered;
+
+            // Calc Stats
             const totalPnl = filtered.reduce((sum, e) => sum + (e.pnlValue || 0), 0);
             const winCount = filtered.filter(e => (e.pnlValue || 0) > 0).length;
             const totalCount = filtered.length;
-            const winRate = filtered.length > 0 ? (winCount / filtered.length * 100) : 0;
+            const winRate = totalCount > 0 ? (winCount / totalCount * 100) : 0;
+            
+            // Update UI Stats
             const pnlEl = document.getElementById('stat-pnl');
             pnlEl.innerText = window.formatMoney(totalPnl);
             pnlEl.className = `text-sm font-bold font-mono ${totalPnl >= 0 ? 'text-green-400' : 'text-red-400'}`;
@@ -441,6 +504,9 @@
             const winEl = document.getElementById('stat-winrate');
             winEl.innerText = `${winRate.toFixed(1)}%`;
             winEl.className = `text-sm font-bold font-mono ${winRate >= 50 ? 'text-green-400' : 'text-orange-400'}`;
+
+            // Update Journal Table with FILTERED list (Mặc định reset về collapsed khi đổi filter)
+            renderJournal(filtered, false);
         };
 
         window.openMenu = (fid) => {
@@ -528,9 +594,17 @@
 
         window.setIntervalTime = (label) => { window.config.interval = label; setIntervalTimeUI(label); saveSettings(); };
         window.setLeverage = (lev) => { window.config.leverage = lev; setLeverageUI(lev); document.getElementById('leverage-val').innerText = lev + 'x'; saveSettings(); };
-        window.openModal = (id) => document.getElementById(id).style.display = 'block';
-        window.closeModal = (id) => document.getElementById(id).style.display = 'none';
         
+        // --- ADDED MISSING FUNCTIONS ---
+        window.openModal = (id) => {
+            const el = document.getElementById(id);
+            if(el) el.style.display = 'block';
+        };
+        window.closeModal = (id) => {
+            const el = document.getElementById(id);
+            if(el) el.style.display = 'none';
+        };
+
         window.handleRegister = async () => {
             const email = document.getElementById('reg-email').value; const pass = document.getElementById('reg-pass').value; const confirm = document.getElementById('reg-pass-confirm').value;
             if(pass !== confirm) { document.getElementById('reg-error').innerText = "Mật khẩu không khớp!"; return; }
@@ -545,13 +619,49 @@
             if(newPass !== confirmPass) { document.getElementById('change-pass-error').innerText = "Không khớp!"; return; }
             try { if (auth.currentUser) { await updatePassword(auth.currentUser, newPass); window.showToast("Đã lưu mật khẩu mới"); closeModal('modal-change-pass'); } } catch (e) { document.getElementById('change-pass-error').innerText = "Lỗi: " + e.message; }
         };
+        
+        // --- NEW PROFILE LOGIC ---
+        window.toggleChangePass = () => {
+            const form = document.getElementById('change-pass-form');
+            const chevron = document.getElementById('chevron-pass');
+            if(form.classList.contains('hidden')) {
+                form.classList.remove('hidden');
+                chevron.style.transform = 'rotate(180deg)';
+            } else {
+                form.classList.add('hidden');
+                chevron.style.transform = 'rotate(0deg)';
+            }
+        };
+
+        window.handleProfileChangePass = async () => {
+             const newPass = document.getElementById('new-pass-profile').value; 
+             const confirmPass = document.getElementById('confirm-new-pass-profile').value;
+             const errDiv = document.getElementById('profile-pass-error');
+             
+             if(newPass.length < 6) { errDiv.innerText = "Mật khẩu phải hơn 6 ký tự"; return; }
+             if(newPass !== confirmPass) { errDiv.innerText = "Mật khẩu không khớp!"; return; }
+             
+             errDiv.innerText = "";
+             try { 
+                 if (auth.currentUser) { 
+                     await updatePassword(auth.currentUser, newPass); 
+                     window.showToast("Đã đổi mật khẩu thành công"); 
+                     document.getElementById('new-pass-profile').value = "";
+                     document.getElementById('confirm-new-pass-profile').value = "";
+                     window.toggleChangePass(); // Close form
+                 } 
+             } catch (e) { 
+                 errDiv.innerText = "Lỗi: " + e.message; 
+             }
+        };
+        
         window.showToast = (msg, isError = false) => {
             const toast = document.getElementById('toast-success'); document.getElementById('toast-message').innerText = msg;
             if (isError) { toast.classList.add('toast-error'); toast.querySelector('span:first-child').innerText = '✕'; } 
             else { toast.classList.remove('toast-error'); toast.querySelector('span:first-child').innerText = '✓'; }
             toast.classList.add('active'); setTimeout(() => toast.classList.remove('active'), 3000);
         }
-        window.logoutUser = async () => await signOut(auth);
+        window.logoutUser = async () => { await signOut(auth); closeModal('modal-user-profile'); };
 
         // --- CORE FUNCTIONS ---
         const initFirebase = async () => {
@@ -569,7 +679,14 @@
                     if (user) {
                         userId = user.uid; statusDot.className = "sync-status sync-green";
                         if(user.isAnonymous) { userDisplay.innerText = "Guest Mode"; authGuest.classList.remove('hidden'); authUser.classList.add('hidden'); }
-                        else { userDisplay.innerText = "Online"; document.getElementById('user-email').innerText = user.email; authGuest.classList.add('hidden'); authUser.classList.remove('hidden'); }
+                        else { 
+                            userDisplay.innerText = "Online"; 
+                            // Populate Profile Modal Email
+                            document.getElementById('profile-email').innerText = user.email;
+                            
+                            authGuest.classList.add('hidden'); 
+                            authUser.classList.remove('hidden'); 
+                        }
                         setupListeners(); loadSettings();
                     } else {
                         userId = null; statusDot.className = "sync-status sync-red"; userDisplay.innerText = "Disconnected"; authGuest.classList.remove('hidden'); authUser.classList.add('hidden'); window.activeOrders = []; window.journalEntries = []; renderActiveOrders(); renderJournal();
@@ -581,10 +698,13 @@
         const setupListeners = () => {
             if(!userId) return;
             onSnapshot(collection(db, 'artifacts', appId, 'users', userId, 'active_orders'), (snapshot) => {
-                window.activeOrders = []; snapshot.forEach(doc => window.activeOrders.push({ firestoreId: doc.id, ...doc.data() })); window.activeOrders.sort((a, b) => a.id - b.id); renderActiveOrders();
+                window.activeOrders = []; snapshot.forEach(doc => window.activeOrders.push({ firestoreId: doc.id, ...doc.data() })); window.activeOrders.sort((a, b) => b.timestamp - a.timestamp); renderActiveOrders();
             });
             onSnapshot(collection(db, 'artifacts', appId, 'users', userId, 'journal_history'), (snapshot) => {
-                window.journalEntries = []; snapshot.forEach(doc => window.journalEntries.push({ firestoreId: doc.id, ...doc.data() })); window.journalEntries.sort((a, b) => b.timestamp - a.timestamp); renderJournal(); window.updateStats(window.currentStatFilter);
+                window.journalEntries = []; snapshot.forEach(doc => window.journalEntries.push({ firestoreId: doc.id, ...doc.data() })); window.journalEntries.sort((a, b) => b.timestamp - a.timestamp); 
+                // Update stats and table based on current dropdown selection
+                const currentFilter = document.getElementById('time-filter').value || '12h';
+                window.updateStats(currentFilter);
             });
         };
 
@@ -801,7 +921,7 @@
                 return `
                 <tr id="row-${o.firestoreId}" class="border-b border-slate-800 hover:bg-slate-700/30 transition-colors">
                     <td class="p-2"><div class="font-bold text-[10px] ${color}">${o.direction} x${o.leverage}</div><div class="text-[9px] text-slate-500">${window.formatMoney(o.margin)}</div></td>
-                    <td class="p-2 text-center font-mono text-xs text-blue-400">${o.timeframe || '30m'}</td>
+                    <td class="p-2 text-center font-mono text-xs text-slate-400">${o.timeframe || '30m'}</td>
                     <td class="p-2 font-mono text-slate-400">$${o.entryPrice.toLocaleString()}</td>
                     <td class="p-2 text-center text-[9px] font-mono"><span class="text-green-600 font-bold text-sm">${o.tpPercent}%</span> <span class="text-slate-600">/</span> <span class="text-red-600 font-bold text-sm">${o.slPercent}%</span></td>
                     <td class="p-2 text-right font-bold font-mono pnl-roe text-slate-500">...%</td>
@@ -811,29 +931,70 @@
             }).join('');
         };
 
-        const renderJournal = () => {
+        // UPDATED: renderJournal with Limit & Expand Logic
+        const renderJournal = (entriesToRender, showFull = false) => {
             const list = document.getElementById('journal-list');
-            const count = document.getElementById('journal-count');
+            const count = document.getElementById('journal-count'); 
             const empty = document.getElementById('empty-journal');
-            count.innerText = window.journalEntries.length;
+            
+            // Use passed entries OR fallbacks
+            const displayList = entriesToRender || window.currentFilteredJournal || window.journalEntries;
+            
+            count.innerText = window.journalEntries.length; // Show total items in tab header
 
-            if (window.journalEntries.length === 0) { list.innerHTML = ""; empty.style.display = 'flex'; return; }
+            if (displayList.length === 0) { 
+                list.innerHTML = ""; 
+                empty.style.display = 'flex'; 
+                empty.innerText = "Không có lệnh trong khoảng thời gian này"; 
+                return; 
+            }
             empty.style.display = 'none';
 
-            list.innerHTML = window.journalEntries.map(e => {
+            // Logic: Show 10 or Show All
+            const LIMIT = 10;
+            const shouldLimit = !showFull && displayList.length > LIMIT;
+            const itemsToShow = shouldLimit ? displayList.slice(0, LIMIT) : displayList;
+
+            let html = itemsToShow.map(e => {
                 const color = e.pnlValue >= 0 ? "text-green-400" : "text-red-400";
                 const d = new Date(e.timestamp);
                 const time = `${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')} | ${d.getDate()}/${d.getMonth()+1}/${String(d.getFullYear()).slice(-2)}`;
                 return `
                 <tr class="border-b border-slate-800 hover:bg-slate-800/50">
                     <td class="p-2 text-slate-400 font-mono text-[10px]">${time}</td>
-                    <td class="p-2 text-center font-mono text-xs text-slate-400">${e.timeframe || '30m'}</td> <!-- Added Timeframe Column Data -->
+                    <td class="p-2 text-center font-mono text-xs text-slate-400">${e.timeframe || '30m'}</td>
                     <td class="p-2"><span class="font-bold ${e.direction === 'LONG' ? 'text-green-500' : 'text-red-500'}">${e.direction} x${e.leverage}</span></td>
                     <td class="p-2 text-slate-400 text-[10px]">${e.reason}</td>
                     <td class="p-2 text-right font-bold font-mono ${color}">${window.formatMoney(e.pnlValue)}</td>
                     <td class="p-2 text-center"><button onclick="openMenu('${e.firestoreId}')" class="text-slate-500 hover:text-white font-bold px-2 py-1 hover:bg-slate-700 rounded text-xs">...</button></td>
                 </tr>`;
             }).join('');
+
+            // Append "View More" button if limited
+            if (shouldLimit) {
+                const remaining = displayList.length - LIMIT;
+                html += `
+                <tr onclick="expandJournal()" class="bg-slate-800/30 hover:bg-slate-700/50 cursor-pointer transition-colors group">
+                    <td colspan="6" class="p-3 text-center text-blue-400 font-bold text-xs group-hover:text-blue-300">
+                        ▼ Xem Thêm (${remaining} lệnh cũ hơn)
+                    </td>
+                </tr>`;
+            } else if (showFull && displayList.length > LIMIT) {
+                 // Optional: "Collapse" button at the end
+                 html += `
+                <tr class="bg-slate-900/50">
+                    <td colspan="6" class="p-2 text-center text-slate-500 text-[10px] italic">
+                        -- Đã hiển thị toàn bộ ${displayList.length} lệnh --
+                    </td>
+                </tr>`;
+            }
+
+            list.innerHTML = html;
+        };
+
+        window.expandJournal = () => {
+            // Re-render with showFull = true using the current filtered list
+            renderJournal(window.currentFilteredJournal, true);
         };
 
         const setIntervalTimeUI = (v) => { document.querySelectorAll('.interval-btn').forEach(b => { b.classList.remove('active'); if(b.innerText.toLowerCase()===v.toLowerCase()) b.classList.add('active'); }); };
@@ -844,6 +1005,18 @@
             const tp = document.getElementById('slider-tp'); tp.value = window.config.takeProfit; updateSliderVal(tp.value, 'tp-val', '%');
             document.getElementById('leverage-val').innerText = window.config.leverage + 'x';
         };
+
+        // --- EVENT LISTENERS FOR KEYBOARD ACTIONS ---
+        
+        // 1. Login on Enter key in Password field
+        document.getElementById('login-pass').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') window.handleLogin();
+        });
+
+        // 2. Focus Password field on Enter key in Email field
+        document.getElementById('login-email').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') document.getElementById('login-pass').focus();
+        });
 
         initFirebase();
     </script>
